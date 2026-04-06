@@ -97,27 +97,27 @@ def listar_caixas_fechadas(estado):
 
 
 def remover_peca(estado, id_peca):
-    for lista_nome in ["pecas_aprovadas", "pecas_reprovadas"]:
-        lista = estado[lista_nome]
-        for i, peca in enumerate(lista):
-            if peca["id"] == id_peca:
-                removida = lista.pop(i)
-
-                if lista_nome == "pecas_aprovadas":
-                    for j, peca_caixa in enumerate(estado["caixa_atual"]):
-                        if peca_caixa["id"] == id_peca:
-                            estado["caixa_atual"].pop(j)
-                            break
-
-                return True, removida
-
-    for i, peca in enumerate(estado["caixa_atual"]):
+    for i, peca in enumerate(estado["pecas_reprovadas"]):
         if peca["id"] == id_peca:
-            estado["caixa_atual"].pop(i)
-            for j, peca_aprovada in enumerate(estado["pecas_aprovadas"]):
-                if peca_aprovada["id"] == id_peca:
-                    removida = estado["pecas_aprovadas"].pop(j)
+            removida = estado["pecas_reprovadas"].pop(i)
+            return True, removida
+
+    for i, peca in enumerate(estado["pecas_aprovadas"]):
+        if peca["id"] == id_peca:
+            removida = estado["pecas_aprovadas"].pop(i)
+
+            for j, peca_caixa in enumerate(estado["caixa_atual"]):
+                if peca_caixa["id"] == id_peca:
+                    estado["caixa_atual"].pop(j)
                     return True, removida
+
+            for caixa in estado["caixas_fechadas"]:
+                for j, peca_caixa in enumerate(caixa):
+                    if peca_caixa["id"] == id_peca:
+                        caixa.pop(j)
+                        return True, removida
+
+            return True, removida
 
     return False, None
 
